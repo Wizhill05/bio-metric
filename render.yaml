@@ -1,0 +1,38 @@
+services:
+  # ────────────────────────────────────────────────────────
+  # BACKEND SERVICE (FastAPI)
+  # ────────────────────────────────────────────────────────
+  - type: web
+    name: biometric-backend
+    env: python
+    region: oregon # you can change this
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: SERPAPI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+
+  # ────────────────────────────────────────────────────────
+  # FRONTEND SERVICE (Vite Static Site)
+  # ────────────────────────────────────────────────────────
+  - type: web
+    name: biometric-frontend
+    env: static
+    region: oregon # you can change this
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "./dist"
+    envVars:
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      # This connects the frontend directly to the backend deployed above
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: biometric-backend
+          envVarKey: RENDER_EXTERNAL_URL

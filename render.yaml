@@ -22,7 +22,6 @@ services:
   - type: web
     name: biometric-frontend
     env: static
-    region: oregon # you can change this
     buildCommand: "npm install && npm run build"
     staticPublishPath: "./dist"
     envVars:

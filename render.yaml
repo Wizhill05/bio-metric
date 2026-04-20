@@ -5,6 +5,7 @@ services:
   - type: web
     name: biometric-backend
     env: python
+    plan: free
     region: oregon # you can change this
     buildCommand: "cd backend && pip install -r requirements.txt"
     startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"

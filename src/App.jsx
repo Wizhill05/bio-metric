@@ -8,6 +8,7 @@ import BackgroundElements from "./components/BackgroundElements";
 import { MicroscopeIcon } from "./components/Icons";
 import { fetchHealthResearch } from "./api";
 import { supabase } from "./supabaseClient";
+import posthog from 'posthog-js';
 import "./index.css";
 
 const MAX_FOLLOWUPS = 4;
@@ -109,6 +110,7 @@ function App() {
       setAuthLoading(false);
       if (!localStorage.getItem("onboarding-complete")) setShowOnboarding(true);
       if (u) {
+        posthog.identify(u.id, { email: u.email });
         loadHistory(u.id);
       }
     });
@@ -118,9 +120,11 @@ function App() {
         const u = session?.user ?? null;
         setUser(u);
         if (u) {
+          posthog.identify(u.id, { email: u.email });
           setShowAuthModal(false); // Close auth modal on successful login
           loadHistory(u.id);
         } else {
+          posthog.reset();
           setChatHistory([]);
           setSearchState("idle");
           setCurrentData(null);
@@ -159,6 +163,12 @@ function App() {
     }
     setCurrentData(null);
     // Note: Do not clear activeHistoryId here so we can update the thread
+
+    posthog.capture('performed_search', { 
+      query: q, 
+      is_follow_up: !!currentData,
+      stack_depth: answerStack.length + 1
+    });
 
     try {
       const data = await fetchHealthResearch(q, backendHistoryPayload);

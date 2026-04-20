@@ -4,4 +4,4 @@ fastapi
 uvicorn
 python-dotenv
 pydantic
-serpapi
+google-search-results

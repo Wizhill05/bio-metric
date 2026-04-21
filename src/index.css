@@ -36,12 +36,16 @@ svg[shape-rendering="crispEdges"] {
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: "Space Grotesk", sans-serif;
   background-color: var(--bg-color);
 
   color: var(--text-primary);
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -49,9 +53,8 @@ body {
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
-  overflow-x: hidden;
   padding: 40px;
 }
 
@@ -992,6 +995,8 @@ body {
   padding: 48px;
   width: 100%;
   max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1682,3 +1687,268 @@ body.dark-mode .sidebar-rail-btn.logout:hover {
   text-align: center;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+═══════════════════════════════════════════════════════════════════ */
+
+/* Overlay for Sidebar on Mobile */
+.sidebar-overlay {
+  display: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .app-container {
+    padding: 24px;
+  }
+  .homepage-elements {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  /* History Sidebar Mobile Overlay */
+  .sidebar-overlay.active {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 90;
+    backdrop-filter: blur(2px);
+    animation: slideFadeIn 0.2s ease-out;
+  }
+
+  .history-sidebar {
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .history-sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 280px; /* Keep full width, just hide it off-screen */
+  }
+  .history-sidebar.open {
+    transform: translateX(0);
+    width: 280px;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+  }
+  body.dark-mode .history-sidebar.open {
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.8);
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    position: absolute;
+    top: 20px;
+    right: 16px;
+    z-index: 50;
+    background: var(--tag-bg);
+    border: 2px solid var(--border-color);
+    padding: 6px;
+    color: var(--text-primary);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--border-color);
+  }
+  .mobile-menu-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--border-color);
+  }
+
+  /* Mobile Header */
+  .app-container.idle .search-wrapper {
+    width: 100%;
+    margin-top: 10vh;
+  }
+  .header {
+    margin-top: 12px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 2rem;
+    gap: 8px !important;
+  }
+  .header p {
+    font-size: 0.65rem;
+    line-height: 1.4;
+    margin-top: 10px;
+    padding: 4px 8px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    padding: 8px 0;
+    gap: 8px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-bottom: none;
+  }
+  .search-bar:focus-within {
+    transform: none;
+    box-shadow: none;
+  }
+  .search-bar svg {
+    display: none; /* Hide icon on mobile to save space, or keep it inside input wrapper if we re-layout */
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 14px 12px;
+    font-size: 1rem;
+    text-align: center;
+    background: rgba(128, 128, 128, 0.2);
+  }
+  .search-btn {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* Homepage Panels */
+  .homepage-elements {
+    flex-direction: column;
+    margin-top: 24px;
+  }
+  .side-panel {
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 16px 0;
+    border-bottom: none;
+  }
+
+  /* Tabs */
+  .tabs-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    margin-bottom: 16px;
+    border-bottom: none;
+  }
+  .tabs-container::-webkit-scrollbar {
+    height: 4px;
+  }
+  .tabs-container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+  }
+  .tab {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* Answer Panel */
+  .answer-panel {
+    padding: 16px 0;
+    font-size: 0.95rem;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  /* Papers Viewer Stacked */
+  .paper-viewer {
+    flex-direction: column;
+    height: auto;
+    gap: 16px;
+  }
+  .paper-sidebar {
+    width: 100%;
+    max-height: 200px;
+    flex-shrink: 0;
+    padding-right: 4px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 16px;
+  }
+  .paper-preview {
+    padding: 16px 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .preview-title {
+    font-size: 1.3rem;
+  }
+  .preview-quote {
+    padding: 16px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  .doc-link {
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Flattened Items */
+  .prev-answer-wrap {
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 8px;
+  }
+  .prev-answer-toggle {
+    background: transparent;
+    padding: 12px 0;
+  }
+  .prev-answer-body {
+    border-top: none;
+    padding: 12px 0;
+    background: transparent;
+  }
+  .followup-container {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 16px 0;
+    border-top: none;
+    margin-top: 16px;
+  }
+  .followup-card {
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+  }
+  .followup-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .loading-view {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 16px 0;
+  }
+  .paper-tab {
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+  }
+  .paper-tab.active {
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Modals */
+  .auth-card {
+    padding: 32px 20px;
+  }
+  .onboard-card {
+    padding: 32px 20px;
+  }
+  .onboard-source-grid {
+    grid-template-columns: 1fr;
+  }
+  .onboard-actions {
+    flex-direction: column;
+  }
+  .onboard-btn-next,
+  .onboard-btn-back {
+    width: 100%;
+  }
+}

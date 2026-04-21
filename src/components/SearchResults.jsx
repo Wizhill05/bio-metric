@@ -64,51 +64,56 @@ export default function SearchResults({ data }) {
       )}
 
       {activeTab === 'sources' && papers.length > 0 && (
-        <div className="paper-viewer">
-          {/* Left Sidebar (List of Papers) */}
-          <div className="paper-sidebar">
-            {papers.map((paper, idx) => (
-              <div 
-                key={idx} 
-                className={`paper-tab ${idx === selectedPaperIdx ? 'active' : ''}`}
-                onClick={() => setSelectedPaperIdx(idx)}
-              >
-                {paper.title}
-              </div>
-            ))}
-          </div>
-          
-          {/* Right Pane (Document Detail) */}
-          <div className="paper-preview">
-            <div className="preview-title">{selectedPaper.title}</div>
-            <div className="preview-meta">
-              <span>{selectedPaper.authors}</span>
-              <span className="year">{selectedPaper.year}</span>
-            </div>
-            
-            <div className="preview-abstract">
-              {selectedPaper.abstract || "Abstract not available."}
-            </div>
+        <div className="sources-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {papers.map((paper, idx) => {
+            const isOpen = selectedPaperIdx === idx;
+            return (
+              <div key={idx} className="prev-answer-wrap" style={{ margin: 0 }}>
+                <button 
+                  className="prev-answer-toggle" 
+                  onClick={() => setSelectedPaperIdx(isOpen ? -1 : idx)}
+                  style={{ textTransform: 'none' }}
+                >
+                  <span className="prev-answer-label" style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                    {paper.title}
+                  </span>
+                  <span className="prev-answer-chevron">{isOpen ? '▲' : '▼'}</span>
+                </button>
+                
+                {isOpen && (
+                  <div className="prev-answer-body">
+                    <div className="preview-meta">
+                      <span>{paper.authors}</span>
+                      <span className="year">{paper.year}</span>
+                    </div>
+                    
+                    <div className="preview-abstract">
+                      {paper.abstract || "Abstract not available."}
+                    </div>
 
-            <div className="preview-quote-label">Exact Match Retrieved</div>
-            <div className="preview-quote">
-              "{selectedPaper.exact_phrase}"
-            </div>
-            
-            <div className="preview-actions">
-              <a 
-                href={selectedPaper.link || `https://scholar.google.com/scholar?q=${encodeURIComponent(selectedPaper.title)}`} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="doc-link"
-              >
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                Verify on Google Scholar
-              </a>
-            </div>
-          </div>
+                    <div className="preview-quote-label">Exact Match Retrieved</div>
+                    <div className="preview-quote">
+                      "{paper.exact_phrase}"
+                    </div>
+                    
+                    <div className="preview-actions">
+                      <a 
+                        href={paper.link || `https://scholar.google.com/scholar?q=${encodeURIComponent(paper.title)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="doc-link"
+                      >
+                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" viewBox="0 0 24 24" style={{ marginRight: '8px' }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Verify on Google Scholar
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

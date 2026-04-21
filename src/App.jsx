@@ -54,7 +54,9 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    return window.innerWidth > 768;
+  });
   const [chatHistory, setChatHistory] = useState([]);
   const [activeHistoryId, setActiveHistoryId] = useState(null);
 
@@ -144,6 +146,7 @@ function App() {
     setCurrentQuery(q);
     setSearchState("loading");
     setErrorMsg("");
+    if (window.innerWidth <= 768) setSidebarOpen(false);
 
     // Calculate the history payload to send to the backend
     const currentHistoryPayload = [...answerStack];
@@ -225,6 +228,7 @@ function App() {
     setSearchState("results");
     setActiveHistoryId(item.id);
     setErrorMsg("");
+    if (window.innerWidth <= 768) setSidebarOpen(false);
   };
 
   const handleDeleteHistory = async (id) => {
@@ -287,6 +291,7 @@ function App() {
       {showOnboarding && <OnboardingModal onComplete={() => setShowOnboarding(false)} />}
 
       <div className="layout-root">
+        <div className={`sidebar-overlay ${sidebarOpen ? "active" : ""}`} onClick={() => setSidebarOpen(false)}></div>
         <HistorySidebar
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(o => !o)}
@@ -303,6 +308,18 @@ function App() {
         />
 
         <div className={`app-container ${searchState}`}>
+          <button 
+            className="mobile-menu-btn" 
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open Menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+
           <BackgroundElements />
 
           {/* Search Input Area */}

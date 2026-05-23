@@ -1238,7 +1238,9 @@ body {
    HISTORY SIDEBAR
 ═══════════════════════════════════════════════════════════════════ */
 .history-sidebar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   background: var(--panel-bg);
@@ -1247,8 +1249,6 @@ body {
   overflow: hidden;
   flex-shrink: 0;
   height: 100vh;
-  position: sticky;
-  top: 0;
   z-index: 100;
 }
 .history-sidebar.open {
@@ -1256,6 +1256,15 @@ body {
 }
 .history-sidebar.collapsed {
   width: 64px;
+}
+
+@media (min-width: 769px) {
+  .history-sidebar.open + .app-container {
+    margin-left: 280px;
+  }
+  .history-sidebar.collapsed + .app-container {
+    margin-left: 64px;
+  }
 }
 
 .sidebar-toggle {
@@ -1951,4 +1960,39 @@ body.dark-mode .sidebar-rail-btn.logout:hover {
   .onboard-btn-back {
     width: 100%;
   }
+}
+
+/* ── GitHub fixed button ─────────────────────────────────────────────────── */
+.github-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-color);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 3px 3px 0px var(--border-color);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+.github-btn:hover {
+  background: var(--accent-hover);
+}
+
+.github-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px var(--border-color);
 }

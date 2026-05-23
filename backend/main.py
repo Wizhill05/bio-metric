@@ -21,17 +21,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class Message(BaseModel):
     role: str
     content: str
+
 
 class ChatRequest(BaseModel):
     query: str
     history: Optional[List[Message]] = []
 
+
 class FollowupRequest(BaseModel):
     query: str
     answer: str
+
 
 @app.post("/api/chat")
 async def chat_endpoint(req: ChatRequest):
@@ -39,20 +43,26 @@ async def chat_endpoint(req: ChatRequest):
         raise HTTPException(status_code=400, detail="Query is required")
 
     try:
-        formatted_history = "\n".join(
-            [f"{msg.role.upper()}: {msg.content}" for msg in req.history[-6:]]
-        ) if req.history else "No previous history."
+        formatted_history = (
+            "\n".join(
+                [f"{msg.role.upper()}: {msg.content}" for msg in req.history[-6:]]
+            )
+            if req.history
+            else "No previous history."
+        )
         result_dict = run_health_research_crew(req.query, formatted_history)
         return result_dict
     except Exception as e:
         print(f"Error executing crew: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/api/followup")
 async def followup_endpoint(req: FollowupRequest):
     """Generate 3 follow-up questions on the same health topic using Mistral directly."""
     try:
         from litellm import completion
+
         response = completion(
             model="mistral/mistral-medium-latest",
             api_key=os.environ.get("MISTRAL_API_KEY"),

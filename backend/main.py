@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 import json
+import asyncio
+from functools import partial
 from dotenv import load_dotenv
 
 # Load env before importing crew logic
@@ -50,7 +52,10 @@ async def chat_endpoint(req: ChatRequest):
             if req.history
             else "No previous history."
         )
-        result_dict = run_health_research_crew(req.query, formatted_history)
+        loop = asyncio.get_event_loop()
+        result_dict = await loop.run_in_executor(
+            None, partial(run_health_research_crew, req.query, formatted_history)
+        )
         return result_dict
     except Exception as e:
         print(f"Error executing crew: {str(e)}")

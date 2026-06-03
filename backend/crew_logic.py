@@ -10,6 +10,7 @@ llm = LLM(
     api_key=os.environ.get("MISTRAL_API_KEY"),
     model="mistral/mistral-medium-latest",
     temperature=0.1,
+    drop_params=True,
 )
 
 

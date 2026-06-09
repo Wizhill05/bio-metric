@@ -87,6 +87,7 @@ async def followup_endpoint(req: FollowupRequest):
                 },
             ],
             temperature=0.7,
+            drop_params=True,
         )
         raw = response.choices[0].message.content.strip()
         # Strip markdown fences if present

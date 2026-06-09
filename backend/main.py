@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 # Load env before importing crew logic
 load_dotenv()
 
+# Globally drop unsupported params (e.g. cache_breakpoint) for all litellm calls
+import litellm
+litellm.drop_params = True
+
 from crew_logic import run_health_research_crew
 
 app = FastAPI()

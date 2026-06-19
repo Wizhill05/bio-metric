@@ -134,10 +134,24 @@ def run_health_research_crew(query: str, history: str) -> dict:
         Latest Query: {query}
         
         You must strictly follow your guardrails and output the required data.
+        
+        You MUST respond with ONLY a valid JSON object (no markdown fences, no extra text) matching this exact schema:
+        {{
+            "answer": "A concise, point-wise answer with inline citations formatted as [1](#paper-1), [2](#paper-2), etc. NO medical disclaimer. NO References section at the end.",
+            "papers": [
+                {{
+                    "title": "Paper title",
+                    "authors": "Author names from publication_info",
+                    "year": "Publication year from publication_info",
+                    "exact_phrase": "Verbatim exact phrase from the paper snippet that supports the answer",
+                    "abstract": "The snippet or abstract returned by Google Scholar",
+                    "link": "URL link to the paper"
+                }}
+            ]
+        }}
         """,
-        expected_output="A JSON object matching the strict Pydantic OutputFormat schema.",
+        expected_output="A raw JSON object with 'answer' (string) and 'papers' (array of objects with title, authors, year, exact_phrase, abstract, link). No markdown fences.",
         agent=synthesis_agent,
-        output_json=OutputFormat,
     )
 
     # 3. Form the Crew
@@ -151,9 +165,29 @@ def run_health_research_crew(query: str, history: str) -> dict:
     # 4. Kickoff
     result = health_crew.kickoff()
 
-    try:
-        return result.json_dict
-    except AttributeError:
-        import json
+    import json
+    import re
 
-        return json.loads(result.raw)
+    # Try structured output first (if CrewAI managed to parse it)
+    raw_dict = None
+    try:
+        raw_dict = result.json_dict
+    except (AttributeError, TypeError):
+        pass
+
+    if not raw_dict:
+        raw = result.raw if hasattr(result, "raw") else str(result)
+        # Strip markdown code fences if present
+        raw = raw.strip()
+        fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)```", raw)
+        if fence_match:
+            raw = fence_match.group(1).strip()
+        # Try to extract the JSON object directly
+        brace_match = re.search(r"\{[\s\S]*\}", raw)
+        if brace_match:
+            raw = brace_match.group(0)
+        raw_dict = json.loads(raw)
+
+    # Validate with Pydantic and return clean dict
+    validated = OutputFormat.model_validate(raw_dict)
+    return validated.model_dump()
